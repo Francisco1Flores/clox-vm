@@ -1,0 +1,3 @@
+/home/francisco/programacion/proyectos/c/clox/build/CMakeFiles/clox.dir
+/home/francisco/programacion/proyectos/c/clox/build/CMakeFiles/edit_cache.dir
+/home/francisco/programacion/proyectos/c/clox/build/CMakeFiles/rebuild_cache.dir
