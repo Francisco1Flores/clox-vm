@@ -3,7 +3,7 @@
 #include "debug.h"
 
 int main(int argc, const char* argv[]) {
-
+    
     Chunk chunk;
     initChunk(&chunk);
 
@@ -13,6 +13,10 @@ int main(int argc, const char* argv[]) {
     writeChunk(&chunk, constant, 123);
 
     writeChunk(&chunk, OP_RETURN, 123);
+
+    int constant2 = addConstant(&chunk, 1.5);
+    writeChunk(&chunk, OP_CONSTANT, 124);
+    writeChunk(&chunk, constant2, 124);
 
     disassembleChunk(&chunk, "test chunk");
 
