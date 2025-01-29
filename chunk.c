@@ -2,6 +2,7 @@
 
 #include "chunk.h"
 #include "memory.h"
+#include "stdio.h"
 
 
 void saveLine(Chunk* chunk, int line, int byteIndex);
@@ -15,14 +16,13 @@ void initChunk(Chunk* chunk){
     initValueArray(&chunk->constants);
 }
 
-void writeChunk(Chunk* chunk, uint8_t byte, int line) {
+void writeChunk(Chunk* chunk, int byte, int line) {
     if (chunk->capacity < chunk->count + 1) {
         int oldCapacity = chunk->capacity;
         chunk->capacity = GROW_CAPACITY(oldCapacity);
         //chunk->lines = GROW_ARRAY(int, chunk->lines, oldCapacity, chunk->capacity);
         chunk->code = GROW_ARRAY(uint8_t, chunk->code, oldCapacity, chunk->capacity);
     }
-
     chunk->code[chunk->count] = byte;
     saveLine(chunk, line, chunk->count);
     //chunk->lines[chunk->count] = line;
@@ -72,4 +72,3 @@ int getLine(Chunk* chunk, int byteIndex) {
     }
     return -1;
 }
-
