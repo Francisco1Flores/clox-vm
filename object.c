@@ -7,6 +7,7 @@
 #include "vm.h"
 
 #define ALLOCATE_OBJ(type, objectType) (type*)allocateObject(sizeof(type), objectType)
+#define ALLOCATE_OBJ_STRING(type, objectType, length) (type*)allocateObject(sizeof(type) + sizeof(char[length]), objectType)
 
 static Obj* allocateObject(size_t size, ObjType type) {
     Obj* object = (Obj*)reallocate(NULL, 0, size);
@@ -19,9 +20,9 @@ static Obj* allocateObject(size_t size, ObjType type) {
 }
 
 static ObjString* allocateString(char* chars, int length) {
-    ObjString* string = ALLOCATE_OBJ(ObjString, OBJ_STRING);
+    ObjString* string = ALLOCATE_OBJ_STRING(ObjString, OBJ_STRING, length);
     string->length = length;
-    string->chars = chars;
+    memcpy(string->chars, chars, string->length);
     return string;
 }
 
@@ -42,5 +43,4 @@ void printObject(Value value) {
             printf("%s", AS_CSTRING(value));
             break;
     }
-
 }
