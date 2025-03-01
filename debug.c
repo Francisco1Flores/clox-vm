@@ -36,8 +36,8 @@ static int constantLongInstruction(const char* name, Chunk* chunk, int offset) {
     printValue(chunk->constants.values[constant]);
     printf("'\n");
     // return the offset of the next instruction
-    // instruction size: 4 byte (1 byte instruction, 3 bytes constant direction)
-    return offset + 4;
+    // instruction size: 3 byte (1 byte instruction, 2 bytes constant direction)
+    return offset + 3;
 }
 
 int disassembleInstruction(Chunk* chunk, int offset) {
@@ -62,8 +62,22 @@ int disassembleInstruction(Chunk* chunk, int offset) {
             return constantInstruction("OP_CONSTANT", chunk, offset);
         case OP_CONSTANT_LONG:
             return constantLongInstruction("OP_CONSTANT_LONG", chunk, offset);
+        case OP_NIL:
+            return simpleInstruction("OP_NIL", offset);
+        case OP_TRUE:
+            return simpleInstruction("OP_TRUE", offset);
+        case OP_FALSE:
+            return simpleInstruction("OP_FALSE", offset);
         case OP_NEGATE: 
             return simpleInstruction("OP_NEGATE", offset);
+        case OP_NOT: 
+            return simpleInstruction("OP_NOT", offset);
+        case OP_EQUAL:
+            return simpleInstruction("OP_EQUAL", offset);
+        case OP_GREATER:
+            return simpleInstruction("OP_GREATER", offset);
+        case OP_LESS:
+            return simpleInstruction("OP_LESS", offset);
         case OP_ADD:
             return simpleInstruction("OP_ADD", offset);
         case OP_SUBTRACT:
@@ -81,8 +95,7 @@ int disassembleInstruction(Chunk* chunk, int offset) {
 int readLongConst(Chunk* chunk, int offset) {
     int first = chunk->code[offset + 1];
     int second = chunk->code[offset + 2];
-    int third = chunk->code[offset + 3];
-    return first + UINT8_MAX * second * third;
+    return first + UINT8_MAX * second;
 }
 
 

@@ -7,13 +7,20 @@
 
 typedef enum {
     OP_CONSTANT,      // 1 byte operand
-    OP_CONSTANT_LONG, // 3 bytes operand  TODO
-    OP_RETURN,
+    OP_CONSTANT_LONG, // 3 bytes operand
+    OP_NIL,
+    OP_TRUE,
+    OP_FALSE,
+    OP_EQUAL,
+    OP_GREATER,
+    OP_LESS,
     OP_ADD,
     OP_SUBTRACT,
     OP_MULTIPLY,
     OP_DIVIDE,
+    OP_NOT,
     OP_NEGATE,
+    OP_RETURN,
 } OpCode;
 
 typedef struct {
