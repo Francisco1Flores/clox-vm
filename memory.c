@@ -19,7 +19,8 @@ void freeObject(Obj* object) {
     switch (object->type) {
         case OBJ_STRING: {
             ObjString* string = (ObjString*)object;
-            FREE_ARRAY(char, string->chars, string->length + 1);
+            //don't nessesary becouse free() knows the size of the object allocated
+            //FREE_ARRAY(char, string->chars, string->length);
             FREE(ObjString, object);
             break;
         }

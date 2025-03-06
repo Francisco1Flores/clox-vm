@@ -47,30 +47,33 @@ static char* readFile(const char* path) {
     return buffer;
 }
 
-static void runFile(const char* path) {
+static int runFile(const char* path) {
     char* source = readFile(path);
     InterpretResult result = interpret(source);
     free(source);
     if (result == INTERPRET_COMPILE_ERROR) {
-        exit(65);
+        return 65;
     }
     if (result == INTERPRET_RUNTIME_ERROR) {
-        exit(70);
+        return 70;
     }
+    return 0;
 }
 
 int main(int argc, const char* argv[]) {
     initVM();
 
+    int exitCode;
+
     if (argc == 1) {
         repl();
     } else if (argc == 2) {
-        runFile(argv[1]);
+        exitCode = runFile(argv[1]);
     } else {
         fprintf(stderr, "Usage: clox [path]\n");
         return 64;
     }
 
     freeVM();
-    return 0;
+    return exitCode;
 }

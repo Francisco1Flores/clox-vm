@@ -33,9 +33,13 @@ static void runtimeError(const char* format, ...) {
 void initVM() {
     resetStack();
     vm.objects = NULL;
+    initTable(&vm.globals);
+    initTable(&vm.strings);
 }
 
 void freeVM() {
+    freeTable(&vm.globals);
+    freeTable(&vm.strings);
     freeObjects();
 }
 
@@ -71,7 +75,7 @@ static void concatenate() {
     memcpy(chars, a->chars, a->length);
     memcpy(chars + a->length, b->chars, b->length);
     chars[length] = '\n';
-
+    
     ObjString* result = takeString(chars, length);
     push(OBJ_VAL(result));
 }
@@ -80,6 +84,7 @@ static InterpretResult run() {
 #define READ_BYTE() (*vm.ip++)
 #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
 #define READ_CONSTANT_LONG() (vm.chunk->constants.values[readLongConstBytes()])
+#define READ_STRING() AS_STRING(READ_CONSTANT())
 #define BINARY_OP(valueType,op)                           \
     do {                                                  \
         if (!IS_NUMBER(peek(0)) || !IS_NUMBER(peek(1))) { \
@@ -159,12 +164,9 @@ static InterpretResult run() {
                 break;
             }
             case OP_RETURN: {
-                printValue(pop());
-                printf("\n");
                 return INTERPRET_OK;
             }
             case OP_ADD: {
-                //BINARY_OP(NUMBER_VAL,+);
                 if (IS_STRING(peek(0)) && IS_STRING(peek(1))) {
                     concatenate();
                 } else if (IS_NUMBER(peek(0)) && IS_NUMBER(peek(1))) {
@@ -186,11 +188,45 @@ static InterpretResult run() {
                 break;
             }
             case OP_DIVIDE: {
-                if (IS_NUMBER(peek(1)) && AS_NUMBER(peek(1)) == 0.0) {
+                if (IS_NUMBER(peek(0)) && AS_NUMBER(peek(0)) == 0.0) {
                     runtimeError("Division by zero.");
                     return INTERPRET_RUNTIME_ERROR;
                 }
                 BINARY_OP(NUMBER_VAL,/);
+                break;
+            }
+            case OP_PRINT: {
+                printValue(pop());
+                printf("\n");
+                break;
+            }
+            case OP_POP: {
+                pop();
+                break;
+            }
+            case OP_DEFINE_GLOBAL: {
+                ObjString* name = READ_STRING();
+                tableSet(&vm.globals, name, peek(0));
+                pop();
+                break;
+            }
+            case OP_GET_GLOBAL: {
+                ObjString* name = READ_STRING();
+                Value value;
+                if (!tableGet(&vm.globals, name, &value)) {
+                    runtimeError("Undefined variable '%s'.", name->chars);
+                    return INTERPRET_RUNTIME_ERROR;
+                }
+                push(value);
+                break;
+            }
+            case OP_SET_GLOBAL: {
+                ObjString* name = READ_STRING();
+                if (tableSet(&vm.globals, name, peek(0))) {
+                    tableDelete(&vm.globals, name);
+                    runtimeError("Undefined variable '%s'.", name->chars);
+                    return INTERPRET_COMPILE_ERROR;
+                }
                 break;
             }
         }
@@ -198,6 +234,7 @@ static InterpretResult run() {
 #undef READ_BYTE
 #undef READ_CONSTANT
 #undef READ_CONSTANT_LONG
+#undef READ_STRING
 #undef BINARY_OP
 }
 
