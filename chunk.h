@@ -7,7 +7,7 @@
 
 typedef enum {
     OP_CONSTANT,        // 1 byte operand
-    OP_CONSTANT_LONG,   // 3 bytes operand
+    OP_CONSTANT_LONG,   // 2 bytes operand
     OP_NIL,
     OP_TRUE,
     OP_FALSE,
@@ -25,6 +25,8 @@ typedef enum {
     OP_DEFINE_GLOBAL,
     OP_GET_GLOBAL,     // 1 byte operand (index of constant value) 
     OP_SET_GLOBAL,     // 1 byte operand (index of constant value)
+    OP_GET_LOCAL,      // 1 byte operand (index of constant value) 
+    OP_SET_LOCAL,      // 1 byte operand (index of constant value)
     OP_RETURN,
 } OpCode;
 
